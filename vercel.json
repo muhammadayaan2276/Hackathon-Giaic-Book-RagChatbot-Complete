@@ -1,0 +1,4 @@
+{
+  "buildCommand": "cd My-Book && npm install && npm run build",
+  "outputDirectory": "My-Book/build"
+}
