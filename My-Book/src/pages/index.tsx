@@ -3,16 +3,22 @@ import clsx from "clsx";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
+import Head from "@docusaurus/Head";
 import styles from "./index.module.css";
 
 export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
 
   return (
-    <Layout
-      title="My Book"
-      description="Physical AI & Humanoid Robotics Book"
-    >
+    <Layout>
+      <Head>
+        <title>My Book</title>
+        <meta
+          name="description"
+          content="Physical AI & Humanoid Robotics Book"
+        />
+      </Head>
+
       <header className={styles.hero}>
         <div className={styles.overlay}></div>
 
@@ -26,7 +32,10 @@ export default function Home(): ReactNode {
           </p>
 
           <div className={styles.buttons}>
-            <Link className={clsx("button button--secondary", styles.ctaBtn)} to="/docs/intro">
+            <Link
+              className={clsx("button button--secondary", styles.ctaBtn)}
+              to="/docs/intro"
+            >
               Start Learning 🚀
             </Link>
 

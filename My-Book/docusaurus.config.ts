@@ -94,8 +94,9 @@ const config: Config = {
           label: 'Tutorial',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
+        {to: '/chatbot', label: 'Book Assistant', position: 'left'},
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/muhammadayaan2276/hackathon-Giaic',
           label: 'GitHub',
           position: 'right',
         },
@@ -139,7 +140,7 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/muhammadayaan2276/hackathon-Giaic',
             },
           ],
         },
