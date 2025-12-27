@@ -1,0 +1,4 @@
+cohere
+qdrant-client
+beautifulsoup4
+langchain
