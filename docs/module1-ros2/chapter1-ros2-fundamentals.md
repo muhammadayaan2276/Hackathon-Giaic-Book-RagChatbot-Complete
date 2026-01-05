@@ -76,14 +76,14 @@ This demonstrates a flexible data pipeline. New nodes can easily be added to sub
 ```mermaid
 graph LR
     subgraph "Camera Node"
-        A[Publishes <br> "/camera/image_raw" <br> (Image)]
+        A["Publishes\n'/camera/image_raw'\n(Image)"]
     end
     subgraph "Lane Detector Node"
-        B(Subscribes <br> "/camera/image_raw")
-        C(Publishes <br> "/vision/lane_boundaries" <br> (Lane))
+        B["Subscribes\n'/camera/image_raw'"]
+        C["Publishes\n'/vision/lane_boundaries'\n(Lane)"]
     end
     subgraph "Decision Maker Node"
-        D(Subscribes <br> "/vision/lane_boundaries")
+        D["Subscribes\n'/vision/lane_boundaries'"]
     end
 
     A --> B;

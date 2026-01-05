@@ -15,7 +15,7 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://hackathon-giaic-self.vercel.app/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -94,7 +94,7 @@ const config: Config = {
           label: 'Tutorial',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
-        {to: '/chatbot', label: 'Book Assistant', position: 'left'},
+
         {
           href: 'https://github.com/muhammadayaan2276/hackathon-Giaic',
           label: 'GitHub',

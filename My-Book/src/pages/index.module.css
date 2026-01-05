@@ -61,6 +61,19 @@
   border: none;
 }
 
+.chatbotBtn {
+  font-size: 1.1rem;
+  padding: 0.7rem 1.6rem;
+  border-radius: 10px;
+  background: #10b981 !important;
+  color: white !important;
+  border: none;
+}
+
+.chatbotBtn:hover {
+  background: #059669 !important;
+}
+
 .mainSection {
   padding: 3rem 2rem;
   text-align: center;

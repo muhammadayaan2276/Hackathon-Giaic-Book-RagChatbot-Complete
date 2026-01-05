@@ -1,4 +1,7 @@
-cohere
 qdrant-client
 beautifulsoup4
 langchain
+httpx
+sentence-transformers
+typer
+python-dotenv

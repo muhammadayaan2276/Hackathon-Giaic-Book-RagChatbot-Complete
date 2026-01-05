@@ -44,6 +44,7 @@ def run_ingestion_pipeline(url: str, rebuild: bool = False):
                 "content": extracted["content"]
             })
             logging.info(f"Extracted content from: {page_url}")
+            logging.debug(f"Content for {page_url}: \n{extracted['content'][:500]}...") # Log first 500 chars of content
         except requests.exceptions.RequestException as e:
             logging.error(f"Error fetching/extracting content from {page_url}: {e}")
         except Exception as e:

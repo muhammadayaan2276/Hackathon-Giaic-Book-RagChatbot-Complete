@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 class VectorStore:
     def __init__(self):
-        self.client = QdrantClient(host=Config.QDRANT_HOST, port=Config.QDRANT_PORT)
+        self.client = QdrantClient(url=Config.QDRANT_URL, api_key=Config.QDRANT_API_KEY, timeout=60)
         self.collection_name = "docusaurus_book" # From data-model.md
 
     def recreate_collection(self, vector_size: int = None):
@@ -69,9 +69,14 @@ class VectorStore:
                 )
             )
         
-        operation_info = self.client.upsert(
-            collection_name=self.collection_name,
-            wait=True,
-            points=points
-        )
-        logging.info(f"Upserted {len(points)} points to Qdrant. Status: {operation_info.status}")
+        BATCH_SIZE = 100 # Define a suitable batch size
+        for i in range(0, len(points), BATCH_SIZE):
+            batch = points[i:i + BATCH_SIZE]
+            operation_info = self.client.upsert(
+                collection_name=self.collection_name,
+                wait=True,
+                points=batch
+            )
+            logging.info(f"Upserted {len(batch)} points (batch {i//BATCH_SIZE + 1}/{(len(points)-1)//BATCH_SIZE + 1}) to Qdrant. Status: {operation_info.status}")
+        
+        logging.info(f"Finished upserting a total of {len(points)} points to Qdrant.")
