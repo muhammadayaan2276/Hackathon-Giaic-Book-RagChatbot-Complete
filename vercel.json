@@ -1,4 +1,19 @@
 {
-  "buildCommand": "cd My-Book && npm install && npm run build",
-  "outputDirectory": "My-Book/build"
+  "version": 2,
+  "builds": [
+    {
+      "src": "My-Book/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "cd My-Book && npm install && npm run build",
+        "outputDirectory": "My-Book/build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/My-Book/build/$1"
+    }
+  ]
 }
