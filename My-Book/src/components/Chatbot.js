@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './Chatbot.module.css';
 
@@ -51,7 +52,7 @@ export default function Chatbot() {
     setLoading(true);
 
     try {
-      const response = await fetch('https://muhammad-ayaan-ragchatbot-backend.hf.space/chat', {
+      const response = await fetch('https://muhammad-ayaan-ragchatbot.hf.space/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
