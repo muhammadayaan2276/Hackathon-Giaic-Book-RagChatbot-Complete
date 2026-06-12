@@ -2,10 +2,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.retrieval.strict_rag_agent import StrictRAGAgent, LocalEmbedder, QdrantRetriever
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = FastAPI()
 
 origins = [
+    "https://hackathon-giaic-book-rag-chatbot-co.vercel.app",
     "http://localhost:3000",
     "http://localhost:3001",  # Docusaurus default port
     "http://localhost:3002",  # Alternative Docusaurus port
