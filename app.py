@@ -39,8 +39,32 @@ class ChatbotEngine:
             api_key=os.getenv("QDRANT_API_KEY")
         )
         self.collection = "docusaurus_book"
+        
+        # Load FAQ list
+        self.faq = self.load_faq("docs/500_qa_list.md")
+
+    def load_faq(self, file_path):
+        faq = {}
+        if not os.path.exists(file_path):
+            file_path = "hackathon-Giaic/" + file_path
+            
+        if os.path.exists(file_path):
+            import re
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            blocks = re.split(r'Q\d+:', content)
+            for block in blocks:
+                if 'A:' in block:
+                    q, a = block.split('A:', 1)
+                    faq[q.strip().lower()] = a.strip()
+        return faq
 
     def retrieve(self, query: str):
+        # First check FAQ
+        faq_answer = self.faq.get(query.strip().lower())
+        if faq_answer:
+            return {"type": "faq", "text": faq_answer}
+            
         try:
             vector = self.model.encode(query).tolist()
             results = self.client.query_points(
@@ -48,20 +72,19 @@ class ChatbotEngine:
                 query=vector,
                 limit=5
             ).points
-            return "\n\n".join([r.payload.get("text", "") for r in results])
+            return {"type": "rag", "text": "\n\n".join([r.payload.get("text", "") for r in results])}
         except Exception as e:
             print(f"Retrieval Error: {e}")
-            return ""
+            return {"type": "rag", "text": ""}
 
-    async def generate(self, query: str, context: str):
-        # Identity Logic
-        q = query.lower().strip()
-        if any(x in q for x in ["hi", "hello", "hey"]):
-            return "Hello! I'm your Robotics RAG Assistant. How can I help you today?"
-        if "who are you" in q or "what are you" in q:
-            return "I am a Retrieval-Augmented Generation (RAG) assistant designed to help you with the robotics and AI book content. I answer questions based strictly on the book's information."
-
-        # OpenRouter API Call (Mistral Small 24B Free)
+    async def generate(self, query: str, context_obj: Dict[str, str]):
+        # If it was an FAQ match, return immediately
+        if context_obj["type"] == "faq":
+            return context_obj["text"]
+            
+        context = context_obj["text"]
+        # ... rest of the generate method ...
+        # (Using the previously established API logic)
         url = "https://openrouter.ai/api/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
@@ -78,8 +101,8 @@ Question: {query}
 If the answer is present in the context, provide a detailed answer. If the answer is not clearly found in the context, say 'Answer not found in book'."""
         
         payload = {
-            "model": "mistralai/mistral-small-24b-instruct-2501:free",
-            "messages": [{"role": "user", "content": prompt}]
+        "model": "openai/gpt-4o-mini",
+        "messages": [{"role": "user", "content": prompt}]
         }
         
         try:
