@@ -61,7 +61,7 @@ class ChatbotEngine:
         if "who are you" in q or "what are you" in q:
             return "I am a Retrieval-Augmented Generation (RAG) assistant designed to help you with the robotics and AI book content. I answer questions based strictly on the book's information."
 
-        # OpenRouter API Call (Auto-Free Router)
+        # OpenRouter API Call (Mistral Small 24B Free)
         url = "https://openrouter.ai/api/v1/chat/completions"
         headers = {
             "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
@@ -69,16 +69,16 @@ class ChatbotEngine:
             "X-Title": "Robotics-Book-RAG"
         }
         
-        prompt = f"""You are a strict RAG assistant. 
+        prompt = f"""You are a helpful Robotics assistant. Use the provided context to answer the user's question accurately.
 Context:
 {context}
 
 Question: {query}
 
-Answer strictly from the context above. If information is missing, say 'Answer not found in book'. Keep it concise."""
+If the answer is present in the context, provide a detailed answer. If the answer is not clearly found in the context, say 'Answer not found in book'."""
         
         payload = {
-            "model": "openrouter/auto:free",
+            "model": "mistralai/mistral-small-24b-instruct-2501:free",
             "messages": [{"role": "user", "content": prompt}]
         }
         
