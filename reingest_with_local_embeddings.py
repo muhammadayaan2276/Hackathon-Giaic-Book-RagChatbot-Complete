@@ -9,6 +9,15 @@ import sys
 from pathlib import Path
 import logging
 from typing import List, Dict, Any
+from dotenv import load_dotenv
+
+# Load environment variables from .env file, overriding any existing env vars
+dotenv_path = Path(__file__).parent / ".env"
+if dotenv_path.exists():
+    load_dotenv(dotenv_path, override=True)
+    logging.info(f"Loaded .env from {dotenv_path} (overriding system env)")
+else:
+    logging.warning(".env file not found. Using system environment variables.")
 
 # Add the src directory to the Python path
 sys.path.append(str(Path(__file__).parent / "src"))

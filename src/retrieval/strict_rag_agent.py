@@ -36,8 +36,15 @@ class LocalEmbedder:
     def __init__(self):
         try:
             from sentence_transformers import SentenceTransformer
-            self.model = SentenceTransformer("all-MiniLM-L6-v2")
-            logging.info("Local embedding model loaded.")
+            # Prefer local model path (for Hugging Face Spaces, where internet is blocked at startup)
+            local_model_path = "./models/all-MiniLM-L6-v2"
+            if os.path.exists(local_model_path) and os.listdir(local_model_path):
+                self.model = SentenceTransformer(local_model_path)
+                logging.info(f"Local embedding model loaded from: {local_model_path}")
+            else:
+                # Fallback to online (for local development)
+                self.model = SentenceTransformer("all-MiniLM-L6-v2")
+                logging.info("Local embedding model loaded from Hugging Face Hub (online).")
         except ImportError:
             raise ImportError("sentence-transformers is not installed. Please install it with: pip install sentence-transformers")
 
@@ -164,7 +171,7 @@ async def generate_llm_answer(prompt: str) -> str:
     }
 
     payload = {
-        "model": "mistralai/devstral-2512:free",
+        "model": "openrouter/auto:free",
         "messages": [
             {"role": "system", "content": "You are a strict Retrieval-Augmented Generation (RAG) assistant. You MUST answer questions ONLY based on the provided context. You MUST NOT use your own knowledge, training data, or assumptions. You MUST NOT guess or hallucinate. If the answer is not clearly present in the provided context, reply EXACTLY with: Answer not found in book. Keep answers concise, factual, and to the point. Do NOT add explanations, examples, or extra details not found in the context. Do NOT mention the words 'context', 'book', 'source', or 'document' in your answer."},
             {"role": "user", "content": prompt}
@@ -172,16 +179,21 @@ async def generate_llm_answer(prompt: str) -> str:
     }
 
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
             res = await client.post(
                 "https://openrouter.ai/api/v1/chat/completions",
                 headers=headers,
                 json=payload
             )
-            res.raise_for_status()  # Raise an exception for bad status codes
+            if res.status_code != 200:
+                logging.error(f"OpenRouter API returned status: {res.status_code}")
+                logging.error(f"Response text: {res.text}")
+                raise Exception(f"HTTP {res.status_code}: {res.text}")
             return res.json()["choices"][0]["message"]["content"]
     except Exception as e:
-        logging.error(f"Error generating OpenRouter completion: {e}")
+        logging.error(f"Error generating OpenRouter completion: {type(e).__name__}: {e}")
+        import traceback
+        logging.error("Traceback:\n" + traceback.format_exc())
         return "Answer not found in book."
 
 
@@ -293,11 +305,10 @@ Please provide a detailed answer based on the context above. If the context does
         # Build context string with proper formatting
         context = ""
         for chunk in context_chunks:
-            # Clean up text to avoid encoding issues
             text_content = chunk['text'] or ""
-            # Remove problematic characters
             text_content = text_content.replace('\u200b', '')  # Zero-width space
             context += f"{text_content}\n\n"
+           
 
         prompt = f"""
 Context:
